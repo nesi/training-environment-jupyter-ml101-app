@@ -32,8 +32,7 @@ RUN git clone https://github.com/nesi/sklearn_tutorial.git /opt/sklearn_tutorial
 
 # copy requirements.txt and install dependencies
 COPY requirements.txt /opt/sklearn_tutorial/
-RUN pip3 --no-cache-dir install -r requirements.txt \
-    && pip3 --no-cache-dir install jupyterlab \
+RUN pip3 --no-cache-dir install -r /opt/sklearn_tutorial/requirements.txt
 
 # copy cleanup script
 COPY cleanup-homes /usr/local/bin/
