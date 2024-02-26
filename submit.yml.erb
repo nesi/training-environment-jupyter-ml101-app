@@ -16,7 +16,7 @@ script:
   wall_time: "<%= wall_time.to_i * 3600 %>"
   native:
     container:
-      name: "jupyter"
+      name: "ml101"
       image: "ghcr.io/nesi/training-environment-jupyter-ml101-app:v0.1.0"
       command: ["/bin/bash","-l","<%= staged_root %>/job_script_content.sh"]
       working_dir: "<%= Etc.getpwnam(ENV['USER']).dir %>"
