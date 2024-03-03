@@ -23,13 +23,20 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         zip \
     && rm -rf /var/lib/apt/lists/*
 
+# install miniconda
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /miniconda.sh \
+    && bash /miniconda.sh -b -p /opt/miniconda3 \
+    && rm -f /miniconda3 \
+    && echo "export PATH=/opt/miniconda3/bin:\${PATH}" > /etc/profile.d/miniconda.sh \
+    && echo ". \$(conda info --base)/etc/profile.d/conda.sh" >> /etc/profile.d/miniconda.sh
+
 # copy the repo source (e.g. notebooks) to the container image
-ARG ML101_HASH="de82d6c5221d79a3358f16c3441ebfc9147f6dfa"
+ARG ML101_HASH="dfb7a172a49f76f7c0ab1f9a96fa9b92aafaac96"
 RUN git clone https://github.com/nesi/sklearn_tutorial.git /opt/sklearn_tutorial \
     && cd /opt/sklearn_tutorial \
     && git checkout $ML101_HASH \
-    && rm -rf /opt/sklearn_tutorial/.git
-
-# copy requirements.txt and install dependencies
-COPY requirements.txt /opt/sklearn_tutorial/
-RUN pip3 --no-cache-dir install -r /opt/sklearn_tutorial/requirements.txt
+    && rm -rf /opt/sklearn_tutorial/.git \
+    && . /etc/profile.d/miniconda.sh \
+    && conda env create -f /opt/sklearn_tutorial/environment.yml -p /var/lib/skl_tut \
+    && echo "conda activate /var/lib/skl_tut" >> /etc/profile.d/miniconda.sh \
+    && conda clean -afy
