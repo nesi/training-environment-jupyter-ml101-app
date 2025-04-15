@@ -5,6 +5,7 @@ FROM ubuntu:22.04
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         curl \
         git \
+        dnsutils \
         ldap-utils \
         libnss-ldapd \
         libpam-ldapd \
@@ -18,7 +19,25 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
         vim \
         wget \
         zip \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && localedef -i en_NZ -c -f UTF-8 -A /usr/share/locale/locale.alias en_NZ.UTF-8
+
+ENV LANG en_NZ.utf8
+
+# install kubectl, required for running on the k8s cluster
+ARG KUBECTL_VERSION=v1.28.5
+RUN curl -LO https://dl.k8s.io/release/$KUBECTL_VERSION/bin/linux/amd64/kubectl \
+    && mv kubectl /usr/local/bin/kubectl \
+    && chmod +x /usr/local/bin/kubectl
+
+# copy in ood k8s utils
+ARG UTILS_HASH=6298fb01f7a7c66a8454e3f0fd74437a32491423
+RUN git clone https://github.com/nesi/training-environment-k8s-utils.git /opt/ood-k8s-utils \
+    && cd /opt/ood-k8s-utils \
+    && git checkout $UTILS_HASH \
+    && chmod +x /opt/ood-k8s-utils/files/* \
+    && mv /opt/ood-k8s-utils/files/* /bin/ \
+    && rm -rf /opt/ood-k8s-utils
 
 # install miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /miniconda.sh \
