@@ -46,7 +46,7 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -
     && rm -f /miniconda.sh
 
 # copy the repo source (e.g. notebooks) to the container image
-ARG ML101_HASH="4fd0340acf877a634fd0b0eac4cc0eeffe57fc66"
+ARG ML101_HASH="501119f96baf00a887526bbf7fc14a461683d392"
 RUN git clone https://github.com/nesi/ml101_workshop.git /opt/sklearn_tutorial \
     && cd /opt/sklearn_tutorial \
     && git checkout $ML101_HASH \
