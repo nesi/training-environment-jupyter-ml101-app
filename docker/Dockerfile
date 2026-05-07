@@ -23,7 +23,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && localedef -i en_NZ -c -f UTF-8 -A /usr/share/locale/locale.alias en_NZ.UTF-8
 
-ENV LANG en_NZ.utf8
+ENV LANG=en_NZ.utf8
 
 # install kubectl, required for running on the k8s cluster
 ARG KUBECTL_VERSION=v1.28.5
@@ -40,16 +40,16 @@ RUN git clone https://github.com/nesi/training-environment-k8s-utils.git /opt/oo
     && mv /opt/ood-k8s-utils/files/* /bin/ \
     && rm -rf /opt/ood-k8s-utils
 
-# install miniconda
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /miniconda.sh \
-    && bash /miniconda.sh -b -p /opt/miniconda3 \
-    && rm -f /miniconda.sh
+# install miniforge (includes mamba + libmamba solver + conda-forge by default)
+RUN wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O /miniforge.sh \
+    && bash /miniforge.sh -b -p /opt/miniconda3 \
+    && rm -f /miniforge.sh
 
 # copy the repo source (e.g. notebooks) to the container image
-#ARG ML101_HASH="4fd0340acf877a634fd0b0eac4cc0eeffe57fc66"
+ARG ML101_HASH="501119f96baf00a887526bbf7fc14a461683d392"
 RUN git clone https://github.com/nesi/ml101_workshop.git /opt/sklearn_tutorial \
     && cd /opt/sklearn_tutorial \
-#    && git checkout $ML101_HASH \
+    && git checkout $ML101_HASH \
     && rm -rf /opt/sklearn_tutorial/.git \
     && . /opt/miniconda3/etc/profile.d/conda.sh \
     && conda config --set auto_activate_base false \
